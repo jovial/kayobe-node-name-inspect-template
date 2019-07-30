@@ -1,0 +1,24 @@
+#jinja2: trim_blocks: True,lstrip_blocks: True
+ironic_inspection_rules_name:
+{% for group in inspect_role_interface_map %}
+{% set interface=inspect_role_interface_map[group] %}
+  - description: "Set node name on {{ group}} from {{ interface }} LLDP switch port description"
+    conditions:
+      # Check for the existence of the switch_port_description field.
+      - field: "data://all_interfaces.{{ interface }}"
+        op: "is-empty"
+        invert: True
+      - field: "data://all_interfaces.{{ interface }}.lldp_processed"
+        op: "is-empty"
+        invert: True
+      - field: "data://all_interfaces.{{ interface }}.lldp_processed.switch_port_description"
+        op: "is-empty"
+        invert: True
+      - field: "data://all_interfaces.{{ interface }}.lldp_processed.switch_port_description"
+        op: "contains"
+        value: "{{ group }}"
+    actions:
+      - action: "set-attribute"
+        path: "name"
+        value: "{data[all_interfaces][{{interface }}][lldp_processed][switch_port_description]}"
+{% endfor %}

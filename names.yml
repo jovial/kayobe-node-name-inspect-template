@@ -1,0 +1,14 @@
+---
+
+- name: template inspector rules
+  hosts: localhost
+  vars:
+    inspect_role_interface_map:
+      'monitoring': p785p4
+      'compute': em1
+      'controller': em1
+      'ceph': em1
+  tasks:
+    - template:
+        src: lldp.yaml.j2
+        dest: /tmp/rules
